@@ -36,7 +36,6 @@ public class SecurityConfig {
         if (!userDetailsManager.userExists("user1")) {
         UserDetails user1 = User.withUsername("user1")
                 .password(passwordEncoder().encode("password"))
-                .disabled(false)
                 .roles("USER")
                 .build();
 
@@ -48,7 +47,6 @@ public class SecurityConfig {
             UserDetails admin = User.withUsername("admin")
                     .password(passwordEncoder().encode("admin"))
                     .roles("ADMIN")
-                    .disabled(false)
                     .build();
 
             userDetailsManager.createUser(admin);
