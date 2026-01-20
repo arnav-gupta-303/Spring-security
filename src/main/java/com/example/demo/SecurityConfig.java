@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.sql.DataSource;
@@ -24,11 +25,14 @@ public class SecurityConfig {
     DataSource dataSource;
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception{
+//        Rhe below line means every Http requet to the Application must come from an authenticated logged in user
         http.authorizeHttpRequests((requests)->requests.anyRequest().authenticated());
+//        Spring security will not create or use Http session every request must be authenticated independently
         http.sessionManagement(session ->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 //        http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
-        return http.build();
+        DefaultSecurityFilterChain build = http.build();
+        return build;
     }
     @Bean
     public UserDetailsService userDetailsService(){
@@ -40,8 +44,7 @@ public class SecurityConfig {
                 .build();
 
             userDetailsManager.createUser(user1);
-    }
-
+        }
         // ----- ADMIN -----
         if (!userDetailsManager.userExists("admin")) {
             UserDetails admin = User.withUsername("admin")
@@ -63,8 +66,8 @@ public class SecurityConfig {
 //   |
 //           |--> SecurityFilterChain needs UserDetailsService
 //   |        |
-//           |        --> userDetailsService() CALLED  (1)
+//           |        --> userDetailsService() CALLED  (1) called once
 //        |
 //        |--> AuthenticationProvider setup needs UserDetailsService
 //            |
-//                    --> userDetailsService() CALLED  (2)
+//                    --> userDetailsService.loadByUsername() is called many times
