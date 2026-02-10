@@ -68,6 +68,7 @@ public class Controller {
         List<String> roles= userDetails.getAuthorities().stream()
                 .map(item->item.getAuthority())
                 .toList();
+//        👉 You are creating the response object that will be sent back to the client after successful login.
         LoginResponse loginResponse= new LoginResponse(jwtToken,userDetails.getUsername(),roles);
         return new ResponseEntity<>(loginResponse,HttpStatus.OK);
     }
